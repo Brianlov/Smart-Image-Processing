@@ -1,0 +1,320 @@
+{
+  "HumanEnhancementPresets": {
+    "NormalHuman": {
+      "brightness": {"mode": "linear", "beta": 12},
+      "contrast": {"alpha": 1.12, "min_alpha": 1.05, "max_alpha": 1.15},
+      "saturation": {"multiplier": 1.05, "cap": 0.05},
+      "white_balance": {"gray_world": true, "gain_clamp": [0.95, 1.05]},
+      "local_contrast": {"enabled": true, "radius": 2, "amount": 0.5, "threshold": 2}
+    },
+    "NightHuman": {
+      "brightness": {"mode": "gamma", "gamma": 0.60},
+      "contrast": {"mode": "clahe", "clip_limit": 2.0, "tile_grid": [8, 8]},
+      "saturation": {"multiplier": 1.08, "cap": 0.08},
+      "chroma_boost": {"Cr": 5, "Cb": 5},
+      "local_contrast": {"enabled": true, "radius": 3, "amount": 0.7, "threshold": 3}
+    },
+    "BacklitHuman": {
+      "brightness": {"mode": "gamma", "gamma": 0.65},
+      "contrast": {"mode": "clahe", "clip_limit": 2.0, "tile_grid": [8, 8]},
+      "saturation": {"multiplier": 1.06, "cap": 0.06},
+      "highlight_compression": {"mode": "sqrt_curve"},
+      "local_contrast": {"enabled": true, "radius": 3, "amount": 0.6, "threshold": 3}
+    },
+    "SkinToneSensitive": {
+      "brightness": {"mode": "linear", "beta": 10},
+      "contrast": {"alpha": 1.10, "min_alpha": 1.03, "max_alpha": 1.12},
+      "saturation": {"multiplier": 1.03, "cap": 0.03},
+      "white_balance": {"gray_world": true, "gain_clamp": [0.97, 1.03]},
+      "local_contrast": {"enabled": true, "radius": 2, "amount": 0.4, "threshold": 2}
+    },
+    "GroupPortrait": {
+      "brightness": {"mode": "linear", "beta": 10},
+      "contrast": {"alpha": 1.10, "min_alpha": 1.05, "max_alpha": 1.15},
+      "saturation": {"multiplier": 1.05, "cap": 0.05}
+    },
+    "MotionBlurPortrait": {
+      "brightness": {"mode": "linear", "beta": 12},
+      "contrast": {"alpha": 1.08, "min_alpha": 1.03, "max_alpha": 1.12}
+    },
+    "ExtremeBacklight": {
+      "brightness": {"mode": "gamma", "gamma": 0.60},
+      "contrast": {"mode": "clahe", "clip_limit": 2.0, "tile_grid": [8, 8]}
+    },
+    "StudioPortrait": {
+      "brightness": {"mode": "linear", "beta": 8},
+      "contrast": {"alpha": 1.08, "min_alpha": 1.03, "max_alpha": 1.12},
+      "saturation": {"multiplier": 1.04, "cap": 0.04}
+    }
+  },
+
+
+
+
+  "SceneEnhancementPresets": {
+    "Landscape": {
+      "brightness": {"mode": "linear", "beta": 10},
+      "contrast": {"alpha": 1.15, "min_alpha": 1.05, "max_alpha": 1.20},
+      "saturation": {"multiplier": 1.08, "cap": 0.08},
+      "local_contrast": {"enabled": true, "radius": 3, "amount": 0.6, "threshold": 3}
+    },
+    "NightLandscape": {
+      "brightness": {"mode": "gamma", "gamma": 0.60},
+      "contrast": {"mode": "clahe", "clip_limit": 2.0, "tile_grid": [8, 8]},
+      "saturation": {"multiplier": 1.06, "cap": 0.06},
+      "highlight_compression": {"mode": "sqrt_curve"},
+      "local_contrast": {"enabled": true, "radius": 3, "amount": 0.7, "threshold": 3}
+    },
+    "Macro": {
+      "brightness": {"mode": "linear", "beta": 8},
+      "contrast": {"alpha": 1.10, "min_alpha": 1.05, "max_alpha": 1.15},
+      "saturation": {"multiplier": 1.10, "cap": 0.10},
+      "local_contrast": {"enabled": true, "radius": 4, "amount": 0.8, "threshold": 2}
+    },
+    "Food": {
+      "brightness": {"mode": "linear", "beta": 10},
+      "contrast": {"alpha": 1.12, "min_alpha": 1.05, "max_alpha": 1.18},
+      "saturation": {"multiplier": 1.12, "cap": 0.08},
+      "local_contrast": {"enabled": true, "radius": 3, "amount": 0.6, "threshold": 3}
+    },
+    "AerialDrone": {
+      "brightness": {"mode": "linear", "beta": 12},
+      "contrast": {"alpha": 1.15, "min_alpha": 1.05, "max_alpha": 1.20},
+      "saturation": {"multiplier": 1.08, "cap": 0.08}
+    },
+    "SnowFog": {
+      "brightness": {"mode": "linear", "beta": 15},
+      "contrast": {"mode": "clahe", "clip_limit": 2.0, "tile_grid": [8, 8]},
+      "saturation": {"multiplier": 1.05, "cap": 0.05}
+    },
+    "UrbanCityscape": {
+      "brightness": {"mode": "gamma", "gamma": 0.65},
+      "contrast": {"alpha": 1.12, "min_alpha": 1.05, "max_alpha": 1.18},
+      "saturation": {"multiplier": 1.06, "cap": 0.06}
+    },
+    "BeachWater": {
+      "brightness": {"mode": "linear", "beta": 10},
+      "contrast": {"alpha": 1.10, "min_alpha": 1.05, "max_alpha": 1.15},
+      "saturation": {"multiplier": 1.08, "cap": 0.08}
+    },
+    "SunsetSunrise": {
+      "brightness": {"mode": "linear", "beta": 8},
+      "contrast": {"alpha": 1.12, "min_alpha": 1.05, "max_alpha": 1.18},
+      "saturation": {"multiplier": 1.10, "cap": 0.10}
+    }
+  },
+
+
+
+
+  "SpecialEnhancementPresets": {
+    "Monochrome": {
+      "brightness": {"mode": "linear", "beta": 12},
+      "contrast": {"alpha": 1.15, "min_alpha": 1.05, "max_alpha": 1.20},
+      "saturation": {"enabled": false},
+      "local_contrast": {"enabled": true, "radius": 2, "amount": 0.5, "threshold": 2}
+    },
+    "WashedOut": {
+      "brightness": {"mode": "gamma", "gamma": 1.20},
+      "contrast": {"alpha": 1.10, "min_alpha": 1.05, "max_alpha": 1.15},
+      "saturation": {"multiplier": 1.05, "cap": 0.05},
+      "local_contrast": {"enabled": true, "radius": 2, "amount": 0.4, "threshold": 2}
+    },
+    "Underexposed": {
+      "brightness": {"mode": "gamma", "gamma": 0.60},
+      "linear_boost": {"beta": 15},
+      "contrast": {"alpha": 1.12, "min_alpha": 1.05, "max_alpha": 1.18},
+      "saturation": {"multiplier": 1.06, "cap": 0.06},
+      "local_contrast": {"enabled": true, "radius": 3, "amount": 0.6, "threshold": 3}
+    },
+    "InfraredThermal": {
+      "brightness": {"mode": "linear", "beta": 15},
+      "contrast": {"alpha": 1.15, "min_alpha": 1.05, "max_alpha": 1.20},
+      "saturation": {"enabled": false}
+    },
+    "FilmNegative": {
+      "invert": true,
+      "brightness": {"mode": "linear", "beta": 12},
+      "contrast": {"alpha": 1.12, "min_alpha": 1.05, "max_alpha": 1.18}
+    },
+    "Sepia": {
+      "brightness": {"mode": "linear", "beta": 10},
+      "contrast": {"alpha": 1.10, "min_alpha": 1.05, "max_alpha": 1.15},
+      "saturation": {"multiplier": 1.05, "cap": 0.05}
+    }
+  },
+
+
+
+
+  "GeneralEnhancementPresets": {
+    "NormalGeneral": {
+      "brightness": {"mode": "linear", "beta": 10},
+      "contrast": {"alpha": 1.10, "min_alpha": 1.05, "max_alpha": 1.15},
+      "saturation": {"multiplier": 1.05, "cap": 0.05},
+      "local_contrast": {"enabled": true, "radius": 2, "amount": 0.5, "threshold": 2}
+    },
+    "NightGeneral": {
+      "brightness": {"mode": "gamma", "gamma": 0.60},
+      "contrast": {"mode": "clahe", "clip_limit": 2.0, "tile_grid": [8, 8]},
+      "saturation": {"multiplier": 1.08, "cap": 0.08},
+      "highlight_compression": {"mode": "sqrt_curve"},
+      "local_contrast": {"enabled": true, "radius": 3, "amount": 0.7, "threshold": 3}
+    },
+    "BacklitGeneral": {
+      "brightness": {"mode": "gamma", "gamma": 0.65},
+      "contrast": {"mode": "clahe", "clip_limit": 2.0, "tile_grid": [8, 8]},
+      "saturation": {"multiplier": 1.06, "cap": 0.06},
+      "highlight_compression": {"mode": "sqrt_curve"},
+      "local_contrast": {"enabled": true, "radius": 3, "amount": 0.6, "threshold": 3}
+    },
+    "LowContrastGeneral": {
+      "brightness": {"mode": "linear", "beta": 12},
+      "contrast": {"alpha": 1.15, "min_alpha": 1.05, "max_alpha": 1.20},
+      "saturation": {"multiplier": 1.08, "cap": 0.08},
+      "local_contrast": {"enabled": true, "radius": 3, "amount": 0.7, "threshold": 3}
+    },
+    "HighDynamicRange": {
+      "brightness": {"mode": "gamma", "gamma": 0.65},
+      "contrast": {"alpha": 1.12, "min_alpha": 1.05, "max_alpha": 1.18},
+      "saturation": {"multiplier": 1.06, "cap": 0.06},
+      "local_contrast": {"enabled": true, "radius": 3, "amount": 0.6, "threshold": 3}
+    },
+    "IndoorGeneral": {
+      "brightness": {"mode": "linear", "beta": 10},
+      "contrast": {"alpha": 1.10, "min_alpha": 1.05, "max_alpha": 1.15},
+      "saturation": {"multiplier": 1.05, "cap": 0.05},
+      "local_contrast": {"enabled": true, "radius": 2, "amount": 0.5, "threshold": 2}
+    },
+    "MotionBlurScene": {
+      "brightness": {"mode": "linear", "beta": 12},
+      "contrast": {"alpha": 1.10, "min_alpha": 1.05, "max_alpha": 1.15}
+    },
+    "ArtificialLighting": {
+      "brightness": {"mode": "linear", "beta": 10},
+      "contrast": {"alpha": 1.08, "min_alpha": 1.03, "max_alpha": 1.12},
+      "saturation": {"multiplier": 1.05, "cap": 0.05}
+    }
+  },
+
+
+
+
+  "DocumentEnhancementPresets": {
+    "NormalDocument": {
+      "description": "Well-lit documents with clear text. Mild enhancement only.",
+      "enhancement": {
+        "color_space": "YCrCb",
+        "gamma": 0.90,
+        "clahe_clip_limit": 1.5,
+        "clahe_tile_grid": [8, 8],
+        "highlight_compression": "none",
+        "chroma_boost": 2
+      }
+    },
+    "NightDocument": {
+      "description": "Very dark documents captured in low-light. Strong brightness and contrast enhancement.",
+      "enhancement": {
+        "color_space": "YCrCb",
+        "gamma": 0.55,
+        "clahe_clip_limit": 2.0,
+        "clahe_tile_grid": [8, 8],
+        "highlight_compression": "mild_sqrt",
+        "chroma_boost": 5
+      }
+    },
+    "LowContrastDocument": {
+      "description": "Flat, faded, or weak text visibility. Medium contrast enhancement.",
+      "enhancement": {
+        "color_space": "YCrCb",
+        "gamma": 0.80,
+        "clahe_clip_limit": 2.5,
+        "clahe_tile_grid": [8, 8],
+        "highlight_compression": "none",
+        "chroma_boost": 3
+      }
+    },
+    "ColoredDocument": {
+      "description": "Documents containing stamps, highlights, tables, or colored elements.",
+      "enhancement": {
+        "color_space": "YCrCb",
+        "gamma": 0.95,
+        "clahe_clip_limit": 1.2,
+        "clahe_tile_grid": [8, 8],
+        "highlight_compression": "none",
+        "chroma_boost": 10
+      }
+    },
+    "OldFadedDocument": {
+      "description": "Aged paper or washed-out ink. Recover contrast and color warmth.",
+      "enhancement": {
+        "color_space": "YCrCb",
+        "gamma": 0.85,
+        "clahe_clip_limit": 3.0,
+        "clahe_tile_grid": [8, 8],
+        "highlight_compression": "mild_sqrt",
+        "chroma_boost": 8
+      }
+    },
+    "GlossyDocument": {
+      "description": "Documents with reflective surfaces. Avoid making bright spots worse.",
+      "enhancement": {
+        "color_space": "YCrCb",
+        "gamma": 0.90,
+        "clahe_clip_limit": 1.0,
+        "clahe_tile_grid": [8, 8],
+        "highlight_compression": "strong_log",
+        "chroma_boost": 2
+      }
+    },
+    "ShadowedDocument": {
+      "description": "Partial shadows crossing text. Compensate uneven illumination.",
+      "enhancement": {
+        "color_space": "YCrCb",
+        "gamma": 0.75,
+        "clahe_clip_limit": 3.5,
+        "clahe_tile_grid": [8, 8],
+        "highlight_compression": "mild_sqrt",
+        "chroma_boost": 4
+      }
+    },
+    "BacklitDocument": {
+      "description": "Strong light behind paper causing washed-out center.",
+      "enhancement": {
+        "color_space": "YCrCb",
+        "gamma": 1.10,
+        "clahe_clip_limit": 2.0,
+        "clahe_tile_grid": [8, 8],
+        "highlight_compression": "strong_log",
+        "chroma_boost": 3
+      }
+    },
+    "CurvedDocument": {
+      "description": "Curved book pages or surfaces. Enhancement only, no geometric correction.",
+      "enhancement": {
+        "color_space": "YCrCb",
+        "gamma": 0.90,
+        "clahe_clip_limit": 1.8,
+        "clahe_tile_grid": [8, 8],
+        "highlight_compression": "none",
+        "chroma_boost": 2
+      }
+    },
+    "WarpedDocument": {
+      "brightness": {"mode": "gamma", "gamma": 0.70},
+      "contrast": {"mode": "clahe", "clip_limit": 2.0, "tile_grid": [8, 8]},
+      "linear_boost": {"beta": 15},
+      "saturation": {"multiplier": 1.05, "cap": 0.05},
+      "local_contrast": {"enabled": true, "radius": 3, "amount": 0.6, "threshold": 3}
+    },
+    "HandwrittenDocument": {
+      "brightness": {"mode": "gamma", "gamma": 0.65},
+      "contrast": {"alpha": 1.12, "min_alpha": 1.05, "max_alpha": 1.18},
+      "contrast_method": {"mode": "clahe", "clip_limit": 2.0, "tile_grid": [8, 8]}
+    },
+    "MultiPageScan": {
+      "brightness": {"mode": "linear", "beta": 10},
+      "contrast": {"alpha": 1.10, "min_alpha": 1.05, "max_alpha": 1.15}
+    }
+  }
+}

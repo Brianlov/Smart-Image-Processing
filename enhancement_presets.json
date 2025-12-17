@@ -1,0 +1,236 @@
+{
+  "HumanEnhancementPresets": {
+    "NormalHuman": {
+      "contrast_stretch": {"alpha": 1.1},
+      "histogram_modification": {"method": "equalization", "channel": "luminance"}
+    },
+    "NightHuman": {
+      "contrast_stretch": {"alpha": 1.25},
+      "histogram_modification": {"method": "equalization", "channel": "luminance", "emphasis": "shadows"}
+    },
+    "BacklitHuman": {
+      "contrast_stretch": {"alpha": 1.2},
+      "histogram_modification": {"method": "equalization", "channel": "midtones"}
+    },
+    "SkinToneSensitive": {
+      "contrast_stretch": {"alpha": 1.1},
+      "histogram_modification": {"method": "equalization", "channel": "luminance", "clip_limit": 0.02}
+    },
+    "GroupPortrait": {
+      "contrast_stretch": {"alpha": 1.15},
+      "histogram_modification": {"method": "equalization", "channel": "luminance", "emphasis": "midtones"}
+    },
+    "MotionBlurPortrait": {
+      "contrast_stretch": {"alpha": 1.1},
+      "histogram_modification": {"method": "equalization", "channel": "luminance"}
+    },
+    "ExtremeBacklit": {
+      "contrast_stretch": {"alpha": 1.25},
+      "histogram_modification": {"method": "equalization", "channel": "midtones", "emphasis": "shadows"}
+    },
+    "StudioPortrait": {
+      "contrast_stretch": {"alpha": 1.1},
+      "histogram_modification": {"method": "equalization", "channel": "luminance", "clip_limit": 0.02}
+    }
+  },
+
+
+
+  "SceneEnhancementPresets": {
+    "DayLandscape_Natural": {
+      "clahe": {"clip_limit": 2.5, "tile_grid_size": [8, 8]},
+      "blend_strength": 0.6,
+      "sky_protection": {"threshold": 150, "power": 3},
+      "histogram_modification": {"method": "equalization", "emphasis": "midtones"}
+    },
+    "DayLandscape_UrbanBuildings": {
+      "clahe": {"clip_limit": 2.0, "tile_grid_size": [8, 8]},
+      "blend_strength": 0.5,
+      "sky_protection": {"threshold": 140, "power": 3},
+      "histogram_modification": {"method": "equalization", "emphasis": "midtones", "clip_limit": 0.03}
+    },
+    "GoldenHour_Sunset": {
+      "clahe": {"clip_limit": 2.0, "tile_grid_size": [8, 8]},
+      "blend_strength": 0.5,
+      "sky_protection": {"threshold": 130, "power": 2.5},
+      "color_preservation": true,
+      "histogram_modification": {"method": "equalization", "emphasis": "midtones", "warm_tone_protection": true}
+    },
+    "OvercastCloudy": {
+      "clahe": {"clip_limit": 3.5, "tile_grid_size": [8, 8]},
+      "blend_strength": 0.7,
+      "sky_protection": {"threshold": 140, "power": 4},
+      "histogram_modification": {"method": "equalization", "emphasis": "midtones"}
+    },
+    "BeachCoastal": {
+      "clahe": {"clip_limit": 2.0, "tile_grid_size": [8, 8]},
+      "blend_strength": 0.4,
+      "sky_protection": {"threshold": 160, "power": 4},
+      "bright_area_protection": true,
+      "histogram_modification": {"method": "equalization", "highlight_compression": true}
+    },
+    "ForestGreenLandscape": {
+      "clahe": {"clip_limit": 2.8, "tile_grid_size": [8, 8]},
+      "blend_strength": 0.65,
+      "sky_protection": {"threshold": 150, "power": 3},
+      "shadow_recovery": true,
+      "histogram_modification": {"method": "equalization", "emphasis": "shadows_midtones"}
+    },
+    "MountainAlpine": {
+      "clahe": {"clip_limit": 2.2, "tile_grid_size": [8, 8]},
+      "blend_strength": 0.55,
+      "sky_protection": {"threshold": 170, "power": 5},
+      "bright_area_protection": true,
+      "histogram_modification": {"method": "equalization", "emphasis": "midtones"}
+    },
+    "UrbanReflectiveGlass": {
+      "clahe": {"clip_limit": 1.8, "tile_grid_size": [8, 8]},
+      "blend_strength": 0.45,
+      "sky_protection": {"threshold": 140, "power": 3},
+      "highlight_protection": true,
+      "histogram_modification": {"method": "local_equalization", "clip_limit": 0.02}
+    },
+    "BacklitLandscape": {
+      "clahe": {"clip_limit": 3.0, "tile_grid_size": [8, 8]},
+      "blend_strength": 0.75,
+      "sky_protection": {"threshold": 120, "power": 2},
+      "shadow_recovery": true,
+      "histogram_modification": {"method": "equalization", "emphasis": "shadows", "halo_prevention": true}
+    },
+    "DesertArid": {
+      "clahe": {"clip_limit": 2.0, "tile_grid_size": [8, 8]},
+      "blend_strength": 0.5,
+      "sky_protection": {"threshold": 155, "power": 4},
+      "texture_preservation": true,
+      "histogram_modification": {"method": "equalization", "emphasis": "midtones", "clip_limit": 0.04}
+    },
+    "SnowFog": {
+      "contrast_stretch": {"alpha": 1.3},
+      "histogram_modification": {"method": "equalization", "emphasis": "shadows"}
+    },
+    "SunsetSunrise": {
+      "contrast_stretch": {"alpha": 1.15},
+      "histogram_modification": {"method": "equalization", "emphasis": "midtones"}
+    }
+  },
+
+
+  "SpecialEnhancementPresets": {
+    "Monochrome": {
+      "contrast_stretch": {"alpha": 1.15},
+      "histogram_modification": {"method": "equalization", "grayscale_only": true}
+    },
+    "WashedOut": {
+      "contrast_stretch": {"alpha": 1.1},
+      "histogram_modification": {"method": "equalization", "highlight_compression": true}
+    },
+    "Underexposed": {
+      "contrast_stretch": {"alpha": 1.25},
+      "histogram_modification": {"method": "equalization", "emphasis": "shadows"}
+    },
+    "InfraredThermal": {
+      "contrast_stretch": {"alpha": 1.2},
+      "histogram_modification": {"method": "equalization", "grayscale_only": true}
+    },
+    "FilmNegative": {
+      "invert": true,
+      "contrast_stretch": {"alpha": 1.2},
+      "histogram_modification": {"method": "equalization", "emphasis": "midtones"}
+    },
+    "Sepia": {
+      "contrast_stretch": {"alpha": 1.15},
+      "histogram_modification": {"method": "equalization", "clip_limit": 0.05}
+    }
+  },
+
+
+
+  "GeneralEnhancementPresets": {
+    "NormalGeneral": {
+      "contrast_stretch": {"alpha": 1.1},
+      "histogram_modification": {"method": "equalization"}
+    },
+    "NightGeneral": {
+      "contrast_stretch": {"alpha": 1.25},
+      "histogram_modification": {"method": "equalization", "emphasis": "shadows"}
+    },
+    "BacklitGeneral": {
+      "contrast_stretch": {"alpha": 1.2},
+      "histogram_modification": {"method": "equalization", "channel": "midtones"}
+    },
+    "LowContrastGeneral": {
+      "contrast_stretch": {"alpha": 1.3},
+      "histogram_modification": {"method": "equalization"}
+    },
+    "HighDynamicRange": {
+      "contrast_stretch": {"alpha": 1.2},
+      "histogram_modification": {"method": "equalization", "emphasis": "shadows_midtones"}
+    },
+    "IndoorGeneral": {
+      "contrast_stretch": {"alpha": 1.1},
+      "histogram_modification": {"method": "equalization", "clip_limit": 0.02}
+    },
+    "MotionBlurScene": {
+      "contrast_stretch": {"alpha": 1.15},
+      "histogram_modification": {"method": "equalization", "channel": "luminance"}
+    },
+    "ArtificialLighting": {
+      "contrast_stretch": {"alpha": 1.1},
+      "histogram_modification": {"method": "equalization", "clip_limit": 0.02}
+    }
+  },
+
+
+
+
+  "DocumentEnhancementPresets": {
+    "NormalDocument": {
+      "contrast_stretch": {"alpha": 1.1},
+      "histogram_modification": {"method": "equalization"}
+    },
+    "NightDocument": {
+      "contrast_stretch": {"alpha": 1.25},
+      "histogram_modification": {"method": "equalization", "emphasis": "shadows"}
+    },
+    "LowContrastDocument": {
+      "contrast_stretch": {"alpha": 1.3},
+      "histogram_modification": {"method": "equalization"}
+    },
+    "ColoredDocument": {
+      "contrast_stretch": {"alpha": 1.15},
+      "histogram_modification": {"method": "equalization"}
+    },
+    "OldFadedDocument": {
+      "contrast_stretch": {"alpha": 1.2},
+      "histogram_modification": {"method": "equalization", "clip_limit": 0.05}
+    },
+    "GlossyDocument": {
+      "contrast_stretch": {"alpha": 1.1},
+      "histogram_modification": {"method": "equalization", "highlight_compression": true}
+    },
+    "ShadowDocument": {
+      "contrast_stretch": {"alpha": 1.25},
+      "histogram_modification": {"method": "equalization", "emphasis": "shadows"}
+    },
+    "BacklitDocument": {
+      "contrast_stretch": {"alpha": 1.2},
+      "histogram_modification": {"method": "equalization", "channel": "midtones"}
+    },
+    "CurvedDocument": {
+      "contrast_stretch": {"alpha": 1.15},
+      "histogram_modification": {"method": "equalization"}
+    },
+    "WarpedDocument": {
+      "contrast_stretch": {"alpha": 1.15},
+      "histogram_modification": {"method": "equalization"}
+    },
+    "HandwrittenDocument": {
+      "contrast_stretch": {"alpha": 1.2},
+      "histogram_modification": {"method": "equalization", "emphasis": "midtones"}
+    },
+    "MultiPageScan": {
+      "contrast_stretch": {"alpha": 1.1},
+      "histogram_modification": {"method": "equalization"}
+    }
+  }
+}
