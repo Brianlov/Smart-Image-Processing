@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 # ===============================================================
 # CONFIGURATION
 # ===============================================================
-UPSCALE_FACTOR = 2          # 2x is usually sufficient; 4x can introduce false blur
+UPSCALE_FACTOR = 1.0          # 2x is usually sufficient; 4x can introduce false blur
 BILATERAL_SIGMA_COLOR = 50  # Intensity difference to be considered an edge (Skin smoothing strength)
 BILATERAL_SIGMA_SPACE = 20  # Spatial distance to smooth
 SHARPEN_AMOUNT = 2.0        # Amount of detail to add back
