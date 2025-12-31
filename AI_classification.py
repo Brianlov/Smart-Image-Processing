@@ -13,6 +13,7 @@ Optional installs:
 from __future__ import annotations
 
 import os
+import threading
 from typing import Dict, Optional, Tuple
 
 import numpy as np
@@ -212,6 +213,10 @@ class App:
 
         self.confirm_btn = tk.Button(top, text="Confirm", command=self.on_confirm)
         self.confirm_btn.pack(side="left", padx=10)
+
+        # Progress bar (initially hidden, beside buttons)
+        self.progress = ttk.Progressbar(top, mode="indeterminate", length=140)
+        # self.progress.pack(side="left", padx=10) # Pack when needed
 
         # model status
         self.status_var = tk.StringVar(value="Model: loading when needed (CLIP zero-shot)")
@@ -517,7 +522,23 @@ class App:
         if not self.image_path:
             messagebox.showinfo("Info", "Please upload an image first.")
             return
+
+        # Disable UI during processing
+        self.confirm_btn.config(state="disabled")
+        self.upload_btn.config(state="disabled")
+        self.progress.pack(side="left", padx=10)
+        self.progress.start(10)
+
+        # Start background thread
+        thread = threading.Thread(target=self._enhancement_worker, args=(sel,))
+        thread.start()
+        self.root.after(100, self._monitor_enhancement, thread)
+
+    def _enhancement_worker(self, sel: str) -> None:
         try:
+            self._worker_result_rgb = None
+            self._worker_error = None
+            
             orig_rgb = self._load_image_rgb(self.image_path)
             if sel == "face":
                 enh_rgb = self._run_face_enhance(self.image_path)
@@ -529,12 +550,28 @@ class App:
                 enh_rgb = self._run_landscape_enhance(self.image_path)
             else:
                 raise ValueError(f"Unknown type: {sel}")
+                
+            self._worker_result_rgb = (orig_rgb, enh_rgb, sel)
         except Exception as e:
-            messagebox.showerror("Pipeline Error", f"Failed to run {sel} pipeline:\n{e}")
-            return
+            self._worker_error = e
 
-        self._show_pair_window(orig_rgb, enh_rgb, title=f"{sel.capitalize()} Enhancement Result")
-        print(f"CONFIRMED: path={self.image_path} type={sel}")
+    def _monitor_enhancement(self, thread: threading.Thread) -> None:
+        if thread.is_alive():
+            # Check again in 100ms
+            self.root.after(100, self._monitor_enhancement, thread)
+        else:
+            # Thread finished
+            self.progress.stop()
+            self.progress.pack_forget()
+            self.confirm_btn.config(state="normal")
+            self.upload_btn.config(state="normal")
+
+            if self._worker_error:
+                messagebox.showerror("Pipeline Error", f"Failed to run pipeline:\n{self._worker_error}")
+            elif self._worker_result_rgb:
+                orig_rgb, enh_rgb, sel = self._worker_result_rgb
+                self._show_pair_window(orig_rgb, enh_rgb, title=f"{sel.capitalize()} Enhancement Result")
+                print(f"CONFIRMED: path={self.image_path} type={sel}")
 
 
 def main() -> None:
