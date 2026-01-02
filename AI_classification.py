@@ -227,6 +227,59 @@ class App:
         self.preview.pack(fill="both", expand=True, padx=10, pady=10)
         self.photo_image: Optional[tk.PhotoImage] = None
 
+    # ------------------ Compression Presets ------------------
+    COMPRESSION_PRESETS = {
+        "FAST": {"jpg_quality": 95, "png_compression": 1, "optimize": False},
+        "BALANCED": {"jpg_quality": 90, "png_compression": 6, "optimize": True},
+        "HIGH": {"jpg_quality": 85, "png_compression": 9, "optimize": True},
+        "MAXIMUM": {"jpg_quality": 82, "png_compression": 9, "optimize": True}
+    }
+
+    def _compress_and_save(self, img_rgb: np.ndarray, output_path: str, preset_name: str) -> Tuple[float, float]:
+        """Compress and save RGB image. Returns (original_size_mb, compressed_size_mb)"""
+        if Image is None:
+            raise RuntimeError("Pillow required for compression")
+        
+        preset = self.COMPRESSION_PRESETS[preset_name]
+        file_ext = os.path.splitext(output_path)[1].lower()
+        
+        # Convert RGB to PIL Image
+        pil_img = Image.fromarray(img_rgb)
+        
+        # Save to temp file first to get original size
+        import tempfile
+        with tempfile.NamedTemporaryFile(suffix=file_ext, delete=False) as tmp:
+            temp_path = tmp.name
+        
+        try:
+            # Save without compression for size comparison
+            if file_ext in ['.jpg', '.jpeg']:
+                pil_img.save(temp_path, 'JPEG', quality=100)
+            else:
+                pil_img.save(temp_path, 'PNG', compress_level=0)
+            
+            original_size = os.path.getsize(temp_path) / (1024 * 1024)
+            
+            # Save with compression
+            if file_ext in ['.jpg', '.jpeg']:
+                pil_img.save(output_path, 'JPEG',
+                           quality=preset["jpg_quality"],
+                           optimize=preset["optimize"],
+                           progressive=True)
+            elif file_ext == '.png':
+                pil_img.save(output_path, 'PNG',
+                           compress_level=preset["png_compression"],
+                           optimize=preset["optimize"])
+            else:
+                # Default save for other formats
+                pil_img.save(output_path)
+            
+            compressed_size = os.path.getsize(output_path) / (1024 * 1024)
+            return original_size, compressed_size
+        finally:
+            if os.path.exists(temp_path):
+                os.remove(temp_path)
+
     # ------------------ Enhancement runners ------------------
     def _load_image_rgb(self, path: str) -> np.ndarray:
         if cv2 is None:
@@ -257,11 +310,15 @@ class App:
         main.pack(fill="both", expand=True)
         main.rowconfigure(0, weight=1)
         main.columnconfigure(0, weight=1, uniform="fig")
-        main.columnconfigure(1, weight=1, uniform="fig")
+        main.columnconfigure(1, weight=0)  # Middle column for sync button
+        main.columnconfigure(2, weight=1, uniform="fig")
+
+        # Sync state
+        sync_enabled = [False]  # Shared state for syncing
 
         # Left panel (Figure 1: Original)
         left_panel = tk.Frame(main, bd=2, relief="groove")
-        left_panel.grid(row=0, column=0, sticky="nsew", padx=10, pady=10)
+        left_panel.grid(row=0, column=0, sticky="nsew", padx=(10, 5), pady=10)
         left_panel.rowconfigure(0, weight=0)
         left_panel.rowconfigure(1, weight=1)
         left_panel.rowconfigure(2, weight=0)
@@ -326,17 +383,27 @@ class App:
             step = 0.1 if delta > 0 else -0.1
             left_zoom_var.set(max(0.1, min(4.0, left_zoom_var.get() + step)))
             apply_left_zoom()
+            if sync_enabled[0]:
+                right_zoom_var.set(left_zoom_var.get())
+                apply_right_zoom()
         
         # Pan functionality - proper implementation
         def on_left_press(event) -> None:
             left_canvas.config(cursor="fleur")
             left_canvas.scan_mark(event.x, event.y)
+            if sync_enabled[0]:
+                right_canvas.config(cursor="fleur")
+                right_canvas.scan_mark(event.x, event.y)
         
         def on_left_drag(event) -> None:
             left_canvas.scan_dragto(event.x, event.y, gain=1)
+            if sync_enabled[0]:
+                right_canvas.scan_dragto(event.x, event.y, gain=1)
         
         def on_left_release(event) -> None:
             left_canvas.config(cursor="")
+            if sync_enabled[0]:
+                right_canvas.config(cursor="")
 
         left_canvas.bind("<MouseWheel>", on_left_wheel)
         left_canvas.bind("<ButtonPress-1>", on_left_press)
@@ -344,9 +411,29 @@ class App:
         left_canvas.bind("<ButtonRelease-1>", on_left_release)
         left_canvas.bind("<Configure>", lambda e: apply_left_zoom(force=True))
 
+        # Middle column - Sync button
+        middle_panel = tk.Frame(main)
+        middle_panel.grid(row=0, column=1, sticky="ns", padx=5, pady=10)
+        
+        sync_button = tk.Button(middle_panel, text="⛓\n\nLink", font=("Arial", 10, "bold"),
+                               width=5, height=6, relief="raised", bg="#e0e0e0")
+        sync_button.pack(expand=True)
+        
+        def toggle_sync():
+            sync_enabled[0] = not sync_enabled[0]
+            if sync_enabled[0]:
+                sync_button.config(relief="sunken", bg="#4CAF50", fg="white", text="🔗\n\nLinked")
+                # Sync zoom levels
+                right_zoom_var.set(left_zoom_var.get())
+                apply_right_zoom()
+            else:
+                sync_button.config(relief="raised", bg="#e0e0e0", fg="black", text="⛓\n\nLink")
+        
+        sync_button.config(command=toggle_sync)
+
         # Right panel (Figure 2: Enhanced)
         right_panel = tk.Frame(main, bd=2, relief="groove")
-        right_panel.grid(row=0, column=1, sticky="nsew", padx=10, pady=10)
+        right_panel.grid(row=0, column=2, sticky="nsew", padx=(5, 10), pady=10)
         right_panel.rowconfigure(0, weight=0)
         right_panel.rowconfigure(1, weight=1)
         right_panel.rowconfigure(2, weight=0)
@@ -411,17 +498,27 @@ class App:
             step = 0.1 if delta > 0 else -0.1
             right_zoom_var.set(max(0.1, min(4.0, right_zoom_var.get() + step)))
             apply_right_zoom()
+            if sync_enabled[0]:
+                left_zoom_var.set(right_zoom_var.get())
+                apply_left_zoom()
         
         # Pan functionality - proper implementation
         def on_right_press(event) -> None:
             right_canvas.config(cursor="fleur")
             right_canvas.scan_mark(event.x, event.y)
+            if sync_enabled[0]:
+                left_canvas.config(cursor="fleur")
+                left_canvas.scan_mark(event.x, event.y)
         
         def on_right_drag(event) -> None:
             right_canvas.scan_dragto(event.x, event.y, gain=1)
+            if sync_enabled[0]:
+                left_canvas.scan_dragto(event.x, event.y, gain=1)
         
         def on_right_release(event) -> None:
             right_canvas.config(cursor="")
+            if sync_enabled[0]:
+                left_canvas.config(cursor="")
 
         right_canvas.bind("<MouseWheel>", on_right_wheel)
         right_canvas.bind("<ButtonPress-1>", on_right_press)
@@ -429,14 +526,102 @@ class App:
         right_canvas.bind("<ButtonRelease-1>", on_right_release)
         right_canvas.bind("<Configure>", lambda e: apply_right_zoom(force=True))
 
-        # Caption
-        cap = tk.Label(win, text="Figure 1 (Original) — Figure 2 (Enhanced)")
-        cap.pack(pady=(0, 6))
+        # Save Controls (no caption label)
+        save_frame = tk.Frame(win)
+        save_frame.pack(pady=10, padx=10, fill="x")
+        
+        tk.Label(save_frame, text="Compression:", font=("Arial", 10)).pack(side="left", padx=5)
+        
+        compression_var = tk.StringVar(value="BALANCED")
+        compression_dropdown = ttk.Combobox(save_frame, textvariable=compression_var,
+                                           values=list(self.COMPRESSION_PRESETS.keys()),
+                                           state="readonly", width=12)
+        compression_dropdown.pack(side="left", padx=5)
+        
+        tk.Button(save_frame, text="Save Original", command=lambda: save_original(),
+                 bg="#2196F3", fg="white", font=("Arial", 9, "bold"), padx=15).pack(side="left", padx=5)
+        
+        tk.Button(save_frame, text="Save Enhanced", command=lambda: save_enhanced(),
+                 bg="#4CAF50", fg="white", font=("Arial", 9, "bold"), padx=15).pack(side="left", padx=5)
+        
+        save_status = tk.Label(save_frame, text="", fg="green", font=("Arial", 9))
+        save_status.pack(side="left", padx=10)
+        
+        def save_original():
+            from tkinter import filedialog
+            
+            original_name = os.path.basename(self.image_path)
+            name_parts = os.path.splitext(original_name)
+            suggested_name = f"{name_parts[0]}_original{name_parts[1]}"
+            
+            filetypes = [("JPEG Image", "*.jpg"), ("PNG Image", "*.png"), ("All files", "*.*")]
+            save_path = filedialog.asksaveasfilename(
+                title="Save Original Image",
+                initialfile=suggested_name,
+                filetypes=filetypes,
+                defaultextension=".jpg"
+            )
+            
+            if not save_path:
+                return
+            
+            try:
+                save_status.config(text="Saving...", fg="blue")
+                win.update()
+                
+                preset_name = compression_var.get()
+                orig_size, comp_size = self._compress_and_save(original_rgb, save_path, preset_name)
+                
+                reduction = ((orig_size - comp_size) / orig_size) * 100 if orig_size > 0 else 0
+                save_status.config(
+                    text=f"✓ Saved! ({comp_size:.2f}MB, {reduction:.1f}% reduction)",
+                    fg="green"
+                )
+                print(f"Saved: {save_path} | Original: {orig_size:.2f}MB | Compressed: {comp_size:.2f}MB")
+            except Exception as e:
+                save_status.config(text=f"✗ Error: {str(e)[:50]}", fg="red")
+                messagebox.showerror("Save Error", f"Failed to save image:\n{e}")
+        
+        def save_enhanced():
+            from tkinter import filedialog
+            
+            # Suggest filename
+            original_name = os.path.basename(self.image_path)
+            name_parts = os.path.splitext(original_name)
+            suggested_name = f"{name_parts[0]}_enhanced{name_parts[1]}"
+            
+            filetypes = [("JPEG Image", "*.jpg"), ("PNG Image", "*.png"), ("All files", "*.*")]
+            save_path = filedialog.asksaveasfilename(
+                title="Save Enhanced Image",
+                initialfile=suggested_name,
+                filetypes=filetypes,
+                defaultextension=".jpg"
+            )
+            
+            if not save_path:
+                return
+            
+            try:
+                save_status.config(text="Saving...", fg="blue")
+                win.update()
+                
+                preset_name = compression_var.get()
+                orig_size, comp_size = self._compress_and_save(enhanced_rgb, save_path, preset_name)
+                
+                reduction = ((orig_size - comp_size) / orig_size) * 100 if orig_size > 0 else 0
+                save_status.config(
+                    text=f"✓ Saved! ({comp_size:.2f}MB, {reduction:.1f}% reduction)",
+                    fg="green"
+                )
+                print(f"Saved: {save_path} | Original: {orig_size:.2f}MB | Compressed: {comp_size:.2f}MB")
+            except Exception as e:
+                save_status.config(text=f"✗ Error: {str(e)[:50]}", fg="red")
+                messagebox.showerror("Save Error", f"Failed to save image:\n{e}")
 
         # Initial render
         win.update_idletasks()
-        apply_left_zoom()
-        apply_right_zoom()
+        apply_left_zoom(force=True)
+        apply_right_zoom(force=True)
 
     # Nightscape: median (3x3) + CLAHE on LAB L
     def _run_night_enhance(self, path: str) -> np.ndarray:
