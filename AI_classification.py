@@ -272,6 +272,8 @@ class App:
         left_canvas = tk.Canvas(left_panel, bg="#202020", highlightthickness=0)
         left_canvas.grid(row=1, column=0, sticky="nsew")
         left_img_id = [None]
+        left_cached_photo = [None]  # Cache the PhotoImage to avoid recreating
+        left_zoom_after_id = [None]  # For debouncing zoom
 
         left_controls = tk.Frame(left_panel)
         left_controls.grid(row=2, column=0, sticky="ew", pady=6)
@@ -279,24 +281,41 @@ class App:
         left_zoom_label = tk.Label(left_controls, text="Zoom: 1.00x")
         left_zoom_label.pack(side="left", padx=8)
 
-        def apply_left_zoom() -> None:
+        def apply_left_zoom(force=False) -> None:
             if Image is None or ImageTk is None:
                 return
             try:
                 z = max(0.1, min(4.0, float(left_zoom_var.get())))
             except Exception:
                 z = 1.0
-            pil = Image.fromarray(original_rgb)
-            w, h = pil.size
-            pil_z = pil.resize((max(1, int(w * z)), max(1, int(h * z))), Image.LANCZOS)
-            photo = ImageTk.PhotoImage(pil_z)
-            left_canvas.image = photo
-            cw = left_canvas.winfo_width()
-            ch = left_canvas.winfo_height()
-            if left_img_id[0] is not None:
-                left_canvas.delete(left_img_id[0])
-            left_img_id[0] = left_canvas.create_image(cw // 2, ch // 2, anchor="center", image=photo)
+            
+            # Update label immediately
             left_zoom_label.config(text=f"Zoom: {z:.2f}x")
+            
+            # Debounce: only recreate image after user stops adjusting
+            if not force and left_zoom_after_id[0] is not None:
+                left_canvas.after_cancel(left_zoom_after_id[0])
+            
+            def do_zoom():
+                pil = Image.fromarray(original_rgb)
+                w, h = pil.size
+                new_w, new_h = max(1, int(w * z)), max(1, int(h * z))
+                # Use BILINEAR for faster resizing during zoom, LANCZOS for final
+                resample = Image.BILINEAR if new_w * new_h > 4000000 else Image.LANCZOS
+                pil_z = pil.resize((new_w, new_h), resample)
+                photo = ImageTk.PhotoImage(pil_z)
+                left_cached_photo[0] = photo
+                
+                # Update canvas
+                left_canvas.delete("all")
+                left_img_id[0] = left_canvas.create_image(0, 0, anchor="nw", image=photo)
+                left_canvas.config(scrollregion=(0, 0, new_w, new_h))
+                left_zoom_after_id[0] = None
+            
+            if force:
+                do_zoom()
+            else:
+                left_zoom_after_id[0] = left_canvas.after(150, do_zoom)
 
         tk.Button(left_controls, text="-", width=3, command=lambda: (left_zoom_var.set(max(0.1, left_zoom_var.get() - 0.1)), apply_left_zoom())).pack(side="left")
         tk.Button(left_controls, text="+", width=3, command=lambda: (left_zoom_var.set(min(4.0, left_zoom_var.get() + 0.1)), apply_left_zoom())).pack(side="left", padx=4)
@@ -307,9 +326,23 @@ class App:
             step = 0.1 if delta > 0 else -0.1
             left_zoom_var.set(max(0.1, min(4.0, left_zoom_var.get() + step)))
             apply_left_zoom()
+        
+        # Pan functionality - proper implementation
+        def on_left_press(event) -> None:
+            left_canvas.config(cursor="fleur")
+            left_canvas.scan_mark(event.x, event.y)
+        
+        def on_left_drag(event) -> None:
+            left_canvas.scan_dragto(event.x, event.y, gain=1)
+        
+        def on_left_release(event) -> None:
+            left_canvas.config(cursor="")
 
         left_canvas.bind("<MouseWheel>", on_left_wheel)
-        left_canvas.bind("<Configure>", lambda e: apply_left_zoom())
+        left_canvas.bind("<ButtonPress-1>", on_left_press)
+        left_canvas.bind("<B1-Motion>", on_left_drag)
+        left_canvas.bind("<ButtonRelease-1>", on_left_release)
+        left_canvas.bind("<Configure>", lambda e: apply_left_zoom(force=True))
 
         # Right panel (Figure 2: Enhanced)
         right_panel = tk.Frame(main, bd=2, relief="groove")
@@ -324,6 +357,8 @@ class App:
         right_canvas = tk.Canvas(right_panel, bg="#202020", highlightthickness=0)
         right_canvas.grid(row=1, column=0, sticky="nsew")
         right_img_id = [None]
+        right_cached_photo = [None]  # Cache the PhotoImage to avoid recreating
+        right_zoom_after_id = [None]  # For debouncing zoom
 
         right_controls = tk.Frame(right_panel)
         right_controls.grid(row=2, column=0, sticky="ew", pady=6)
@@ -331,24 +366,41 @@ class App:
         right_zoom_label = tk.Label(right_controls, text="Zoom: 1.00x")
         right_zoom_label.pack(side="left", padx=8)
 
-        def apply_right_zoom() -> None:
+        def apply_right_zoom(force=False) -> None:
             if Image is None or ImageTk is None:
                 return
             try:
                 z = max(0.1, min(4.0, float(right_zoom_var.get())))
             except Exception:
                 z = 1.0
-            pil = Image.fromarray(enhanced_rgb)
-            w, h = pil.size
-            pil_z = pil.resize((max(1, int(w * z)), max(1, int(h * z))), Image.LANCZOS)
-            photo = ImageTk.PhotoImage(pil_z)
-            right_canvas.image = photo
-            cw = right_canvas.winfo_width()
-            ch = right_canvas.winfo_height()
-            if right_img_id[0] is not None:
-                right_canvas.delete(right_img_id[0])
-            right_img_id[0] = right_canvas.create_image(cw // 2, ch // 2, anchor="center", image=photo)
+            
+            # Update label immediately
             right_zoom_label.config(text=f"Zoom: {z:.2f}x")
+            
+            # Debounce: only recreate image after user stops adjusting
+            if not force and right_zoom_after_id[0] is not None:
+                right_canvas.after_cancel(right_zoom_after_id[0])
+            
+            def do_zoom():
+                pil = Image.fromarray(enhanced_rgb)
+                w, h = pil.size
+                new_w, new_h = max(1, int(w * z)), max(1, int(h * z))
+                # Use BILINEAR for faster resizing during zoom, LANCZOS for final
+                resample = Image.BILINEAR if new_w * new_h > 4000000 else Image.LANCZOS
+                pil_z = pil.resize((new_w, new_h), resample)
+                photo = ImageTk.PhotoImage(pil_z)
+                right_cached_photo[0] = photo
+                
+                # Update canvas
+                right_canvas.delete("all")
+                right_img_id[0] = right_canvas.create_image(0, 0, anchor="nw", image=photo)
+                right_canvas.config(scrollregion=(0, 0, new_w, new_h))
+                right_zoom_after_id[0] = None
+            
+            if force:
+                do_zoom()
+            else:
+                right_zoom_after_id[0] = right_canvas.after(150, do_zoom)
 
         tk.Button(right_controls, text="-", width=3, command=lambda: (right_zoom_var.set(max(0.1, right_zoom_var.get() - 0.1)), apply_right_zoom())).pack(side="left")
         tk.Button(right_controls, text="+", width=3, command=lambda: (right_zoom_var.set(min(4.0, right_zoom_var.get() + 0.1)), apply_right_zoom())).pack(side="left", padx=4)
@@ -359,9 +411,23 @@ class App:
             step = 0.1 if delta > 0 else -0.1
             right_zoom_var.set(max(0.1, min(4.0, right_zoom_var.get() + step)))
             apply_right_zoom()
+        
+        # Pan functionality - proper implementation
+        def on_right_press(event) -> None:
+            right_canvas.config(cursor="fleur")
+            right_canvas.scan_mark(event.x, event.y)
+        
+        def on_right_drag(event) -> None:
+            right_canvas.scan_dragto(event.x, event.y, gain=1)
+        
+        def on_right_release(event) -> None:
+            right_canvas.config(cursor="")
 
         right_canvas.bind("<MouseWheel>", on_right_wheel)
-        right_canvas.bind("<Configure>", lambda e: apply_right_zoom())
+        right_canvas.bind("<ButtonPress-1>", on_right_press)
+        right_canvas.bind("<B1-Motion>", on_right_drag)
+        right_canvas.bind("<ButtonRelease-1>", on_right_release)
+        right_canvas.bind("<Configure>", lambda e: apply_right_zoom(force=True))
 
         # Caption
         cap = tk.Label(win, text="Figure 1 (Original) — Figure 2 (Enhanced)")
