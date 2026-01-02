@@ -385,22 +385,41 @@ class App:
         bgr2 = cv2.cvtColor(lab2, cv2.COLOR_LAB2BGR)
         return cv2.cvtColor(bgr2, cv2.COLOR_BGR2RGB)
 
-    # Document: 4-step morph sequence (import from morph_seq if available)
+    # Document: run DocScanner pipeline and display its final output
     def _run_document_enhance(self, path: str) -> np.ndarray:
+        # Ensure OpenCV present
+        if cv2 is None:
+            raise RuntimeError("OpenCV is required to run document pipeline.")
         try:
-            from morph_seq import process_morph_seq
-            res = process_morph_seq(path, out_dir="outputs", save_intermediate=True)
-            binary = res.get("step4_closed")
-            if binary is None:
-                raise RuntimeError("Document pipeline returned no binary result")
-            # Convert to RGB for display
-            if binary.ndim == 2:
-                rgb_bin = cv2.cvtColor(binary, cv2.COLOR_GRAY2RGB)
-            else:
-                rgb_bin = binary
-            return rgb_bin
+            import DocScanner as DS
+            res = DS.process_document(
+                input_path=path,
+                out_dir="outputs",
+                page="A4",
+                scale_long=1200,
+                do_ocr=False,
+                # Key tunables aligned with user command
+                illum_method="divide",
+                illum_blur_frac=0.05,
+                block_size=31,
+                C=3,
+                canny_low=30,
+                canny_high=100,
+                morph_ksize=1,
+                morph_iters=0,
+                fallback_use_whole=True,
+                min_quad_area_ratio=0.15,
+            )
+
+            final_bin = res.get("binary")
+            if final_bin is None:
+                raise RuntimeError("DocScanner pipeline returned no final binary result")
+            # Display must match final pipeline output (scan_08_clean)
+            if final_bin.ndim == 2:
+                return cv2.cvtColor(final_bin, cv2.COLOR_GRAY2RGB)
+            return final_bin
         except Exception:
-            # Fallback: do erosion -> Otsu -> closing inline
+            # Fallback: simple inline erosion -> Otsu -> closing
             rgb = self._load_image_rgb(path)
             gray = cv2.cvtColor(rgb, cv2.COLOR_RGB2GRAY)
             kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (3, 3))
