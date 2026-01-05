@@ -56,7 +56,7 @@ def otsu_binarize(gray: np.ndarray) -> np.ndarray:
     if gray.ndim == 3:
         gray = to_grayscale(gray)
     _, th = cv2.threshold(gray, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
-    return th
+    return 
 
 
 def binary_closing(bin_img: np.ndarray) -> np.ndarray:
