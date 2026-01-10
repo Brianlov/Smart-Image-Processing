@@ -1,4 +1,4 @@
-"""Lightweight AI GUI classifier for 4 classes: nightscape, landscape, document, face.
+r"""Lightweight AI GUI classifier for 4 classes: nightscape, landscape, document, face.
 
 Approach:
 - Primary: Zero-shot CLIP (open-clip-torch, ViT-B/32) over 4 textual prompts.
@@ -707,16 +707,66 @@ class App:
     def _run_face_enhance(self, path: str) -> np.ndarray:
         try:
             import FaceEnhancement as FE
+            import cv2
+            import numpy as np
+
+            # 1. Load & Prep
             original = FE.load_and_prep(path)
-            skin_mask = FE.get_refined_skin_mask(original)
-            skin_enhanced = FE.apply_glamour_skin(original, skin_mask)
-            sharpened = FE.enhance_details(skin_enhanced, amount=2.0)
-            features_popped = FE.pixel_pop_eyes(sharpened)
-            color_corrected = FE.adjust_saturation(features_popped, saturation=1.0)
-            stretched = FE.apply_contrast_stretching(color_corrected)
-            final_output = FE.apply_histogram_equalization(stretched)
+            
+            # 2. Noise Classification
+            noise_type = FE.classify_noise_type(original)
+            
+            # 3. Denoising
+            if noise_type == "gaussian":
+                # Gaussian Path: Light (5x5) & Strong (9x9) Gaussian Blur
+                denoised_light = cv2.GaussianBlur(original, (5, 5), 0)
+                denoised_strong = cv2.GaussianBlur(original, (9, 9), 0)
+            elif noise_type == "impulse":
+                print(f"Detected {noise_type.upper()} Noise -> Using Median Filter Strategy.")
+                # Median Path: Face=3, BG=5
+                denoised_light = cv2.medianBlur(original, 3)
+                denoised_strong = cv2.medianBlur(original, 5)
+            else:
+                # Legacy Path: Smart Denoise (NLM)
+                denoised_light, _ = FE.apply_smart_denoise(original, override_h=10)
+                denoised_strong, _ = FE.apply_smart_denoise(original, override_h=30)
+            
+            # 4. Blending with Skin Mask
+            skin_mask = FE.get_refined_skin_mask(denoised_light)
+            mask_norm = skin_mask.astype(float) / 255.0
+            mask_norm = cv2.merge([mask_norm, mask_norm, mask_norm])
+            
+            denoised_combined = (denoised_light * mask_norm) + (denoised_strong * (1 - mask_norm))
+            denoised_combined = denoised_combined.astype(np.uint8)
+            
+            # 5. Skin Smoothing
+            skin_enhanced = FE.apply_glamour_skin(denoised_combined, skin_mask)
+            
+            # 6. Eye Enhancement
+            features_popped = FE.pixel_pop_eyes(skin_enhanced)
+            
+            # 7. Color & Tone
+            # Base Saturation
+            val_sat = 1.2 if noise_type == "gaussian" else 1.0
+            color_corrected = FE.adjust_saturation(features_popped, saturation=val_sat)
+            
+            # Warmth (Red Boost)
+            warmed = FE.apply_warmth(color_corrected, amount=15)
+            
+            if noise_type == "gaussian":
+                # Gaussian Path: Skip Contrast Stretch, Use CLAHE, Skip Sharpen
+                final_output = FE.apply_histogram_equalization(warmed)
+            else:
+                # Legacy Path: Stretch -> CLAHE -> Polish -> Sharpen
+                stretched = FE.apply_contrast_stretching(warmed)
+                clahe_result = FE.apply_histogram_equalization(stretched)
+                polished = cv2.bilateralFilter(clahe_result, d=5, sigmaColor=20, sigmaSpace=20)
+                final_output = FE.apply_masked_sharpening(polished, skin_mask, amount=2.0)
+
             return cv2.cvtColor(final_output, cv2.COLOR_BGR2RGB)
-        except Exception:
+
+        except Exception as e:
+            print(f"Face Pipeline Error: {e}")
             # Fallback: bilateral on face regions not guaranteed, so apply globally but conservatively
             rgb = self._load_image_rgb(path)
             bgr = cv2.cvtColor(rgb, cv2.COLOR_RGB2BGR)
