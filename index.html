@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Smart Image Processing | Context-Aware Automation</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Orbitron:wght@600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+    <header class="site-header">
+        <nav class="nav">
+            <div class="logo">Smart DIP</div>
+            <ul class="nav-links">
+                <li><a href="#overview">Overview</a></li>
+                <li><a href="#pipelines">Smart Pipelines</a></li>
+                <li><a href="#collaborators">Collaborators</a></li>
+                <li><a href="#journey">Development Journey</a></li>
+            </ul>
+        </nav>
+        <section id="overview" class="hero">
+            <div class="hero-content">
+                <h1 class="glow">Context‑Aware Automation</h1>
+                <p class="subtitle">Bridging traditional engineering with modern AI — our YOLOv8/CLIP intelligence layer classifies images and auto‑routes them to specialized processing pipelines.</p>
+                <div class="hero-badges">
+                    <span class="badge">YOLOv8 / CLIP</span>
+                    <span class="badge">Auto Routing</span>
+                    <span class="badge">Specialized DIP</span>
+                </div>
+            </div>
+            <div class="hero-aside">
+                <div class="how-it-works card">
+                    <h3 class="section-subtitle">How It Works</h3>
+                    <ol class="steps">
+                        <li><strong>Classify:</strong> Detect image context via YOLOv8/CLIP.</li>
+                        <li><strong>Route:</strong> Trigger the Landscape / Nightscape / Face / Document pipelines.</li>
+                        <li><strong>Optimize:</strong> Apply tailored DIP ops for clean, reliable results.</li>
+                    </ol>
+                </div>
+            </div>
+        </section>
+    </header>
+
+    <main>
+        <section id="pipelines" class="section">
+            <h2 class="section-title">Smart Pipelines</h2>
+            <p class="section-lead">Each pipeline is auto‑selected by the intelligence layer, then tuned for its context to minimize manual parameter fiddling.</p>
+
+            <div class="pipelines-grid">
+                <article class="pipeline-card card">
+                    <div class="pipeline-head">
+                        <h3>Landscape</h3>
+                        <span class="lead">Lead: [Name]</span>
+                    </div>
+                    <p>Color balance, dynamic range recovery, and detail‑preserving sharpening for outdoor scenes.</p>
+                    <div class="image-comparison">
+                        <div class="img-box">
+                            <span class="label">Original</span>
+                            <img src="https://placehold.co/520x320/111827/94a3b8?text=Landscape+Input" alt="Landscape Original">
+                        </div>
+                        <div class="img-box">
+                            <span class="label">Processed</span>
+                            <img src="https://placehold.co/520x320/0b132b/00f0ff?text=Landscape+Enhanced" alt="Landscape Processed">
+                        </div>
+                    </div>
+                </article>
+
+                <article class="pipeline-card card">
+                    <div class="pipeline-head">
+                        <h3>Nightscape</h3>
+                        <span class="lead">Lead: [Name]</span>
+                    </div>
+                    <p>Noise restoration and low‑light stabilization with adaptive denoising and contrast boosting.</p>
+                    <div class="image-comparison">
+                        <div class="img-box">
+                            <span class="label">Original</span>
+                            <img src="https://placehold.co/520x320/0a0f1f/94a3b8?text=Night+Input" alt="Night Original">
+                        </div>
+                        <div class="img-box">
+                            <span class="label">Processed</span>
+                            <img src="https://placehold.co/520x320/0b132b/ff00c8?text=Night+Restored" alt="Night Processed">
+                        </div>
+                    </div>
+                </article>
+
+                <article class="pipeline-card card">
+                    <div class="pipeline-head">
+                        <h3>Face</h3>
+                        <span class="lead">Lead: [Name]</span>
+                    </div>
+                    <p>Face‑aware enhancement: tone mapping, artifact cleanup, and edge‑preserving smoothing.</p>
+                    <div class="image-comparison">
+                        <div class="img-box">
+                            <span class="label">Original</span>
+                            <img src="https://placehold.co/520x320/1f2937/94a3b8?text=Face+Input" alt="Face Original">
+                        </div>
+                        <div class="img-box">
+                            <span class="label">Processed</span>
+                            <img src="https://placehold.co/520x320/1b1f2a/a6ff00?text=Face+Enhanced" alt="Face Processed">
+                        </div>
+                    </div>
+                </article>
+
+                <article class="pipeline-card card">
+                    <div class="pipeline-head">
+                        <h3>Document Scanner</h3>
+                        <span class="lead">Lead: [Name]</span>
+                    </div>
+                    <p>Structural DIP: Canny edge detection, contour finding, and perspective warping for crisp scans.</p>
+                    <div class="image-comparison">
+                        <div class="img-box">
+                            <span class="label">Original</span>
+                            <img src="https://placehold.co/520x320/0b0f1a/94a3b8?text=Doc+Input" alt="Document Original">
+                        </div>
+                        <div class="img-box">
+                            <span class="label">Processed</span>
+                            <img src="https://placehold.co/520x320/0b132b/00f0ff?text=Doc+Warped+%26+Enhanced" alt="Document Processed">
+                        </div>
+                    </div>
+                    <div class="code-snippet"><code>edges = cv2.Canny(img, 100, 200)  # detect
+contours = cv2.findContours(edges, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+M = cv2.getPerspectiveTransform(src_quad, dst_quad)
+scan = cv2.warpPerspective(img, M, (W, H))</code></div>
+                </article>
+            </div>
+        </section>
+
+        <section id="collaborators" class="section">
+            <h2 class="section-title">Collaborators</h2>
+            <p class="section-lead">Four engineers, one goal — robust automation across diverse visual contexts.</p>
+
+            <div class="collaborators-grid">
+                <div class="profile card">
+                    <img class="avatar" src="https://placehold.co/160x160/111827/00f0ff?text=Portrait" alt="Portrait" />
+                    <div class="profile-body">
+                        <h4 class="name">[Member 1]</h4>
+                        <p class="role">Landscape pipeline lead — color balance & HDR recovery.</p>
+                    </div>
+                </div>
+                <div class="profile card">
+                    <img class="avatar" src="https://placehold.co/160x160/111827/ff00c8?text=Portrait" alt="Portrait" />
+                    <div class="profile-body">
+                        <h4 class="name">[Member 2]</h4>
+                        <p class="role">Nightscape pipeline lead — adaptive denoise & contrast.</p>
+                    </div>
+                </div>
+                <div class="profile card">
+                    <img class="avatar" src="https://placehold.co/160x160/111827/a6ff00?text=Portrait" alt="Portrait" />
+                    <div class="profile-body">
+                        <h4 class="name">[Member 3]</h4>
+                        <p class="role">Face pipeline lead — enhancement & artifact cleanup.</p>
+                    </div>
+                </div>
+                <div class="profile card">
+                    <img class="avatar" src="https://placehold.co/160x160/111827/00f0ff?text=Portrait" alt="Portrait" />
+                    <div class="profile-body">
+                        <h4 class="name">[Member 4]</h4>
+                        <p class="role">Document pipeline lead — Canny + perspective warping.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="journey" class="section">
+            <h2 class="section-title">Development Journey</h2>
+            <p class="section-lead">From brittle heuristics to resilient, AI‑driven context detection and automation.</p>
+
+            <div class="journey-grid">
+                <div class="journey-panel card">
+                    <h3>Early Manual Heuristics</h3>
+                    <ul class="bullets">
+                        <li>Static thresholds failed under variable lighting.</li>
+                        <li>Manual parameter tuning per image category.</li>
+                        <li>Edge cases caused artifacts and loss of detail.</li>
+                    </ul>
+                </div>
+                <div class="journey-panel card accent">
+                    <h3>AI‑Driven Automation (Final)</h3>
+                    <ul class="bullets">
+                        <li>YOLOv8/CLIP infer context and route pipelines.</li>
+                        <li>Adaptive parameters align to content and noise profile.</li>
+                        <li>Consistent results across landscapes, nightscapes, faces, documents.</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <p>Smart Digital Image Processing — 2026 • Context‑Aware Automation</p>
+    </footer>
+</body>
+</html>
