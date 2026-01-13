@@ -754,14 +754,16 @@ class App:
             warmed = FE.apply_warmth(color_corrected, amount=15)
             
             if noise_type == "gaussian":
-                # Gaussian Path: Skip Contrast Stretch, Use CLAHE, Skip Sharpen
-                final_output = FE.apply_histogram_equalization(warmed)
+                 # Gaussian: CLAHE -> Polished -> Sharpen
+                 clahe_result = FE.apply_histogram_equalization(warmed)
+                 final_output = cv2.bilateralFilter(clahe_result, d=5, sigmaColor=20, sigmaSpace=20)
+            elif noise_type == "impulse":
+                 # Impulse: Contrast Stretch Only (as per previous manual edit)
+                 final_output = FE.apply_contrast_stretching(warmed)
             else:
-                # Legacy Path: Stretch -> CLAHE -> Polish -> Sharpen
-                stretched = FE.apply_contrast_stretching(warmed)
-                clahe_result = FE.apply_histogram_equalization(stretched)
-                polished = cv2.bilateralFilter(clahe_result, d=5, sigmaColor=20, sigmaSpace=20)
-                final_output = FE.apply_masked_sharpening(polished, skin_mask, amount=2.0)
+                 # Fallback: Just Contrast Stretch then Sharpen
+                 stretched = FE.apply_contrast_stretching(warmed)
+                 final_output = FE.apply_masked_sharpening(stretched, skin_mask, amount=2.0)
 
             return cv2.cvtColor(final_output, cv2.COLOR_BGR2RGB)
 

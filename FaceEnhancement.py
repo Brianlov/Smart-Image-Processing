@@ -21,8 +21,8 @@ def load_and_prep(path):
         raise ValueError("Image not found")
     
     
-    # 1. Gentle Upscale (Bicubic) - Creates a better canvas for processing
-    img = cv2.resize(img, None, fx=UPSCALE_FACTOR, fy=UPSCALE_FACTOR, interpolation=cv2.INTER_CUBIC)
+    # 1. Gentle Upscale (Bicubic) - CANCELLED AS REQUESTED
+    # img = cv2.resize(img, None, fx=UPSCALE_FACTOR, fy=UPSCALE_FACTOR, interpolation=cv2.INTER_CUBIC)
 
     return img
 
@@ -323,7 +323,7 @@ def apply_masked_sharpening(image, mask, amount=1.0):
 if __name__ == "__main__":
     try:
         # 1. Load & Prop
-        original_noisy = load_and_prep("public/facewithgaussiannoise.jpg")
+        original_noisy = load_and_prep("public/facewithnoise.jpg")
         print("Image loaded and upscaled (Contains Noise).")
         
         # 1. Denoising (Dual Strategy)
@@ -399,40 +399,51 @@ if __name__ == "__main__":
         print("Warmth/Redness boosted.")
 
         # Apply Contrast Stretching (Linear stretching)
-        # Apply Contrast Stretching (Linear stretching) - SKIP IF GAUSSIAN
+        # Apply Contrast Stretching (Linear stretching)
+        # Enabled for Gaussian as requested (replacing CLAHE)
+        stretched = apply_contrast_stretching(warmed)
+        # print("Contrast Stretching applied.") # Optional log
+
+        # Apply Contrast Stretching
         if noise_type_detected == "gaussian":
-             # For Gaussian pipeline, we skip contrast stretching to avoid noise amp
              print("Skipping Contrast Stretching (Gaussian Mode).")
              stretched = warmed
         else:
+             print(f"Applying Contrast Stretching ({noise_type_detected.upper() if noise_type_detected else 'Legacy'} Mode).")
              stretched = apply_contrast_stretching(warmed)
         
-        # Apply Histogram Equalization (CLAHE) for extra "Pop"
-        clahe_result = apply_histogram_equalization(stretched)
+        # Apply Histogram Equalization (CLAHE)
+        if noise_type_detected == "gaussian":
+             print("Applying CLAHE (Gaussian Mode).")
+             clahe_result = apply_histogram_equalization(stretched)
+             # Use CLAHE result for next step
+             base_for_sharpening = clahe_result
+        else:
+             print("Skipping CLAHE (Non-Gaussian Mode).")
+             # Use Stretched result for next step
+             base_for_sharpening = stretched
         
-        # 6b. Post-CLAHE Polish (Edge-Preserving Smooth)
-        # SKIP for Gaussian (as per request "Remove ... polishing")
+        # 6b. Post-CLAHE Polish
         if noise_type_detected == "gaussian":
-             polished = clahe_result
-        else:
-             # CLAHE can re-introduce micro-noise. We smooth it out gently.
+             print("Applying Polish (Bilateral) (Gaussian Mode).")
              polished = cv2.bilateralFilter(clahe_result, d=5, sigmaColor=20, sigmaSpace=20)
-        print("Global tone (Contrast Stretching + CLAHE) applied & Polished.")
-
-        # 7. Final Masked Sharpening (Face Only)
-        # 7. Final Masked Sharpening - SKIP IF GAUSSIAN
-        if noise_type_detected == "gaussian":
-            print("Skipping Final Sharpening (Gaussian Mode).")
-            final_output = polished
+             base_for_sharpening = polished
         else:
-            final_sharpen_amount = SHARPEN_AMOUNT
-            # If impulse/other, we might want extra sharpening
-            if noise_type_detected != "gaussian": 
-                 # Legacy logic
-                 pass
-            
-            print(f"Applying Final Masked Sharpening (Amount={final_sharpen_amount})...")
-            final_output = apply_masked_sharpening(polished, skin_mask, amount=final_sharpen_amount)
+             # Already set base_for_sharpening above (stretched)
+             pass
+        
+        # 7. Final Masked Sharpening
+        if noise_type_detected == "impulse":
+             # User seemed to want Impulse to end at Contrast Stretch in AI_class manual edit
+             # But usually main script is fully featured. Let's apply sharpening for Gaussian, maybe skip for Impulse?
+             # Request only specified "The gaussian used the CLAHE then sharpening".
+             # Assuming Impulse stays as is (Contrast Stretch -> Output)
+             print("Skipping Final Sharpening (Impulse Mode).")
+             final_output = base_for_sharpening
+        else:
+             # Gaussian & Others get sharpening
+             print(f"Applying Final Masked Sharpening (Amount={SHARPEN_AMOUNT})...")
+             final_output = apply_masked_sharpening(base_for_sharpening, skin_mask, amount=SHARPEN_AMOUNT)
         
         # Save
         cv2.imwrite("public/enhanced_face.jpg", final_output)
