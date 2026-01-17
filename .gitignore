@@ -1,2 +1,9 @@
-
-
+venv/
+__pycache__/
+*.pyc
+.env
+.vscode/
+pipeline_stages/
+public/pipeline_stages/
+public/pipeline_stages_gaussian/
+public/pipeline_stages_linear/

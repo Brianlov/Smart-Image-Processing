@@ -49,8 +49,8 @@ except Exception:
 
 LABELS = ["nightscape", "landscape", "document", "face"]
 PROMPTS = {
-    "nightscape": "a night cityscape photograph with bright lights and dark sky",
-    "landscape": "a daytime natural landscape photograph with sky or mountains or trees",
+    "nightscape": "a night cityscape photograph with bright lights and dark sky and road",
+    "landscape": "lake",
     "document": "a scanned paper document page with text on a white background",
     "face": "a human face portrait photograph"
 }

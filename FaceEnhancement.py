@@ -5,7 +5,6 @@ import matplotlib.pyplot as plt
 # ===============================================================
 # CONFIGURATION
 # ===============================================================
-UPSCALE_FACTOR = 1.0          # 2x is usually sufficient; 4x can introduce false blur
 BILATERAL_SIGMA_COLOR = 30  # Intensity difference to be considered an edge (Lower = More edge preservation)
 BILATERAL_SIGMA_SPACE = 10  # Spatial distance to smooth (Lower = Less blurring)
 SHARPEN_AMOUNT = 2.0        # Amount of detail to add back
@@ -19,11 +18,6 @@ def load_and_prep(path):
     img = cv2.imread(path)
     if img is None:
         raise ValueError("Image not found")
-    
-    
-    # 1. Gentle Upscale (Bicubic) - CANCELLED AS REQUESTED
-    # img = cv2.resize(img, None, fx=UPSCALE_FACTOR, fy=UPSCALE_FACTOR, interpolation=cv2.INTER_CUBIC)
-
     return img
 
 def apply_smart_denoise(img, override_h=None):
